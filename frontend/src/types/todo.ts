@@ -4,6 +4,7 @@ export interface Todo {
   completed: boolean;
   createdAt: string;
   updatedAt: string;
+  description: string;
 }
 
 export interface TodoInput {
