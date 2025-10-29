@@ -9,11 +9,10 @@ const server = app.listen(PORT, () => {
   console.log(`Health check: http://localhost:${PORT}/health`);
 });
 
-// Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('SIGTERM получен. Закрытие сервера...');
+  console.log('Received SIGTERM. Closing server');
   server.close(() => {
-    console.log('Сервер закрыт');
+    console.log('Server closed');
   });
 });
 

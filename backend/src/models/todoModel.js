@@ -15,16 +15,6 @@ class TodoModel {
     if (data.completed !== undefined) this.completed = data.completed;
     this.updatedAt = new Date().toISOString();
   }
-
-  toJSON() {
-    return {
-      id: this.id,
-      title: this.title,
-      completed: this.completed,
-      createdAt: this.createdAt,
-      updatedAt: this.updatedAt
-    };
-  }
 }
 
 export default TodoModel;

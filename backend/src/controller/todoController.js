@@ -9,7 +9,6 @@ class TodoController {
       const newTask = await TodoService.createTask(req);
 
       res.status(200).json(newTask);
-      console.log('Result:', newTask)
     } catch (error) {
       next(error);
     }

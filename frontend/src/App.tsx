@@ -23,7 +23,7 @@ const App: React.FC = () => {
       <div className="app-container">
         <header className="app-header">
           <h1 className="app-title">
-            <span className="title-icon">✓</span>
+            {/* <span className="title-icon">✓</span> */}
             Todo List
           </h1>
           <p className="app-subtitle">Stay organized and productive</p>

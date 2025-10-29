@@ -30,10 +30,6 @@ class Database {
     this.todos.splice(index, 1);
     return deleted;
   }
-
-  clear() {
-    this.todos = [];
-  }
 }
 
 export default new Database();

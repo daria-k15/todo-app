@@ -68,6 +68,8 @@ export const useTodos = (): UseTodosReturn => {
 
       const result = await todoService.update(id, { completed: !todo.completed });
       
+      console.log("Response update: ", result);
+
       if (result) {
         setTodos(prevTodos => 
           prevTodos.map(t => t?.id === id ? result : t)

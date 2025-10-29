@@ -7,7 +7,7 @@ class TodoService {
     try {
       const response = await fetch(`${API_URL}`);
 
-      if (!response.ok) throw new Error('Failed to fetch reminders');
+      if (!response.ok) throw new Error('Failed to get all reminders');
       console.log('GET ALL Response:', response);
       return response.json();
     } catch (error) {
@@ -18,7 +18,7 @@ class TodoService {
 
   async getById(id: number): Promise<Todo> {
     const response = await fetch(`${API_URL}/${id}`);
-      if (!response.ok) throw new Error('Failed to fetch reminders');
+      if (!response.ok) throw new Error('Failed to get reminder by ID');
 
     return response.json();
   }
@@ -53,7 +53,7 @@ class TodoService {
         body: JSON.stringify(todoData)
       })  
 
-    if (!response.ok) throw new Error('Failed to create a reminder');
+    if (!response.ok) throw new Error('Failed to update a reminder');
     return response.json();
   }
 
@@ -62,7 +62,7 @@ class TodoService {
         method: 'DELETE'
       })  
 
-    if (!response.ok) throw new Error('Failed to create a reminder');
+    if (!response.ok) throw new Error('Failed to delete a reminder');
     return response.json();
   }
 }
