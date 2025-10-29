@@ -1,5 +1,5 @@
-require('dotenv').config();
-const app = require('./src/app').default;
+import dotenv from 'dotenv';
+import app from './src/app.js';
 
 const PORT = process.env.PORT || 8000;
 
@@ -16,4 +16,4 @@ process.on('SIGTERM', () => {
   });
 });
 
-module.exports = server;
+export default server;
