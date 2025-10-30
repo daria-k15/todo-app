@@ -1,6 +1,19 @@
 # Todo List Fullstack App (React + Node.js + Docker)
 
-A todo list application built with React + TypeScript(frontend), Node.js/Express (backend), and Docker Compose for deployment
+A full-stack todo list application built with **React (TypeScript)** on the frontend and **Node.js/Express** on the backend.
+
+### Core Features
+- Create new todos with title and description
+- Mark todos as complete/incomplete (toggle)
+- Delete todos
+- View all todos in a clean, organized list
+- Priority System: Assign priority levels (Low 🟢, Medium 🟡, High 🔴) to todos with visual indicators
+- Statistics Dashboard: Real-time stats showing:
+  - Total todos
+  - Completed vs Pending count
+  - Todos by priority level
+- Dark Mode: Toggle between light and dark themes with persistent preference
+
 
 ## Stack
 
@@ -75,15 +88,22 @@ npm test
 
 ---
 
+
 ## API Endpoints
 
-| Method | Endpoint               | Description                                                      | Example Request Body                |
-|--------|------------------------|------------------------------------------------------------------|-------------------------------------|
-| GET    | `/todos`           | Returns all todos, sorted by creation date                       | *None*                              |
-| POST   | `/todos`           | Creates a new todo item. Requires `title` (string)               | `{ "title": "Buy milk" }`           |
-| GET    | `/todos/:id`       | Returns a specific todo item by ID                               | *None*                              |
-| PUT    | `/todos/:id`       | Updates a todo; can change `title`, `description`, `completed`   | `{ "completed": true }`             |
-| DELETE | `/todos/:id`       | Deletes a todo item by ID                                        | *None*                              |
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/todos` | Get all todos |
+| GET | `/todos/:id` | Get a single todo by ID |
+| GET | `/todos/stats` | Get statistics (total, completed, pending, by priority) |
+| POST | `/todos` | Create a new todo |
+| PUT | `/todos/:id` | Update a todo |
+| DELETE | `/todos/:id` | Delete a todo |
+
+### API Request/Response Examples
+
+**Create Todo (POST /api/todos)**
+                          |
 
 **Additional Endpoints:**
 - `/api-docs`: Swagger UI interactive API documentation.
