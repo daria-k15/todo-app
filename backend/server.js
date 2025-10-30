@@ -6,7 +6,6 @@ const PORT = process.env.PORT || 8000;
 const server = app.listen(PORT, () => {
   console.log(`Server runs on port ${PORT}`);
   console.log(`API documentation: http://localhost:${PORT}/api-docs`);
-  console.log(`Health check: http://localhost:${PORT}/health`);
 });
 
 process.on('SIGTERM', () => {

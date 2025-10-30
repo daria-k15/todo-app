@@ -1,4 +1,4 @@
-import { Todo, TodoInput, TodoUpdate, ApiResponse } from '../types/todo';
+import { Todo, TodoInput, TodoUpdate, TodoStats } from '../types/todo';
 
 const API_URL = 'http://localhost:8000/todos';
 
@@ -18,7 +18,7 @@ class TodoService {
 
   async getById(id: number): Promise<Todo> {
     const response = await fetch(`${API_URL}/${id}`);
-      if (!response.ok) throw new Error('Failed to get reminder by ID');
+    if (!response.ok) throw new Error('Failed to get reminder by ID');
 
     return response.json();
   }
@@ -32,7 +32,7 @@ class TodoService {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(todoData)
-      })  
+      })
 
       if (!response.ok) throw new Error('Failed to create a reminder');
 
@@ -46,12 +46,12 @@ class TodoService {
 
   async update(id: number, todoData: TodoUpdate): Promise<Todo> {
     const response = await fetch(`${API_URL}/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(todoData)
-      })  
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(todoData)
+    })
 
     if (!response.ok) throw new Error('Failed to update a reminder');
     return response.json();
@@ -59,10 +59,17 @@ class TodoService {
 
   async delete(id: number): Promise<Todo> {
     const response = await fetch(`${API_URL}/${id}`, {
-        method: 'DELETE'
-      })  
+      method: 'DELETE'
+    })
 
     if (!response.ok) throw new Error('Failed to delete a reminder');
+    return response.json();
+  }
+
+  async getStats(): Promise<TodoStats> {
+    const response = await fetch(`${API_URL}/stats`);
+    if (!response.ok) throw new Error('Failed to get stats');
+
     return response.json();
   }
 }

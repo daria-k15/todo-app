@@ -1,63 +1,54 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import todoService from '../services/todoService';
-import { Todo, TodoInput, TodoStats } from '../types/todo';
+import { Todo, TodoInput, TodoUpdate, TodoStats } from '../types/todo';
 
-interface UseTodosReturn {
-  todos: Todo[];
-  loading: boolean;
-  error: string | null;
-  addTodo: (todoData: TodoInput) => Promise<Todo>;
-  toggleTodo: (id: number) => Promise<void>;
-  deleteTodo: (id: number) => Promise<void>;
-  clearError: () => void;
-  stats: TodoStats;
-  refetch: () => Promise<void>;
-}
-
-export const useTodos = (): UseTodosReturn => {
+export const useTodos = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [stats, setStats] = useState<TodoStats | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTodos = useCallback(async () => {
+  const fetchTodos = async (): Promise<void> => {
     try {
       setLoading(true);
-      setError(null);
       const result = await todoService.getAll();
-      
-      if (result && Array.isArray(result)) {
+      if (result) {
         setTodos(result);
-      } else {
-        setTodos([]);
       }
+      setError(null);
     } catch (err: any) {
-      const errorMsg = err.response?.data?.error || err.message || 'Failed to load todos';
-      setError(errorMsg);
-      console.error('Error fetching todos:', err);
-      setTodos([]);
+      setError(err.response?.data?.error || err.message || 'Failed to fetch todos');
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
+
+  const fetchStats = async (): Promise<void> => {
+    try {
+      const result = await todoService.getStats();
+      if (result) {
+        setStats(result);
+      }
+    } catch (err: any) {
+      console.error('Failed to fetch stats:', err);
+    }
+  };
 
   useEffect(() => {
     fetchTodos();
-  }, [fetchTodos]);
+    fetchStats();
+  }, []);
 
-  const addTodo = async (todoData: TodoInput): Promise<Todo> => {
+  const addTodo = async (todoData: TodoInput): Promise<void> => {
     try {
-      setError(null);
       const result = await todoService.create(todoData);
-      
       if (result) {
-        setTodos(prevTodos => [result, ...prevTodos]);
-        return result;
+        setTodos(prevTodos => [...prevTodos, result]);
+        fetchStats();
       }
-      throw new Error('Invalid response');
+      setError(null);
     } catch (err: any) {
-      const errorMsg = err.response?.data?.error || err.message || 'Failed to add todo';
-      setError(errorMsg);
-      throw new Error(errorMsg);
+      setError(err.response?.data?.error || err.message || 'Failed to create todo');
     }
   };
 
@@ -68,13 +59,27 @@ export const useTodos = (): UseTodosReturn => {
 
       const result = await todoService.update(id, { completed: !todo.completed });
       
-      console.log("Response update: ", result);
+      if (result) {
+        setTodos(prevTodos => 
+          prevTodos.map(t => t?.id === id ? result : t)
+        );
+        fetchStats();
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || err.message || 'Failed to update todo');
+    }
+  };
 
+  const updateTodo = async (id: number, data: TodoUpdate): Promise<void> => {
+    try {
+      const result = await todoService.update(id, data);
+      
       if (result) {
         setTodos(prevTodos => 
           prevTodos.map(t => t?.id === id ? result : t)
         );
       }
+      setError(null);
     } catch (err: any) {
       setError(err.response?.data?.error || err.message || 'Failed to update todo');
     }
@@ -84,28 +89,23 @@ export const useTodos = (): UseTodosReturn => {
     try {
       await todoService.delete(id);
       setTodos(prevTodos => prevTodos.filter(t => t?.id !== id));
+      fetchStats();
+      setError(null);
     } catch (err: any) {
       setError(err.response?.data?.error || err.message || 'Failed to delete todo');
     }
   };
 
-  const clearError = (): void => setError(null);
-
-  const stats: TodoStats = {
-    total: todos.length,
-    completed: todos.filter(t => t?.completed).length,
-    pending: todos.filter(t => !t?.completed).length
-  };
-
   return {
     todos,
+    stats,
     loading,
     error,
     addTodo,
     toggleTodo,
     deleteTodo,
-    clearError,
-    stats,
-    refetch: fetchTodos
+    updateTodo,
+    refreshTodos: fetchTodos,
+    refreshStats: fetchStats
   };
 };

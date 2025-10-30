@@ -1,18 +1,14 @@
 # Todo List Fullstack App (React + Node.js + Docker)
 
-A todo list application built with React (frontend), Node.js/Express (backend), TypeScript on frontend, and Docker Compose for deployment.
-
----
+A todo list application built with React + TypeScript(frontend), Node.js/Express (backend), and Docker Compose for deployment
 
 ## Stack
 
 **Frontend:**
-- React (with hooks and functional components)
-- TypeScript
+- React + TypeScript
 
 **Backend:**
-- Node.js (18+)
-- Express.js
+- Node.js (18+) + Express.js
 - In-memory database (for demo purposes)
 - Jest + Supertest (API tests)
 - Swagger-jsdoc + Swagger UI (API docs)
@@ -42,7 +38,6 @@ docker-compose up --build
 - **Frontend** accessible at: [http://localhost:3000](http://localhost:3000)
 - **Backend** accessible at: [http://localhost:8000](http://localhost:8000)
 - **API Docs** at: [http://localhost:8000/api-docs](http://localhost:8000/api-docs)
-- **Health check**: [http://localhost:8000/health](http://localhost:8000/health)
 
 ---
 
@@ -73,14 +68,14 @@ By default runs on http://localhost:3000
 
 **Backend tests** (Jest + Supertest):
 
+```bash
 cd backend
 npm test
+```
 
 ---
 
 ## API Endpoints
-
-All endpoints prefixed with `/todos`.
 
 | Method | Endpoint               | Description                                                      | Example Request Body                |
 |--------|------------------------|------------------------------------------------------------------|-------------------------------------|
@@ -91,5 +86,4 @@ All endpoints prefixed with `/todos`.
 | DELETE | `/todos/:id`       | Deletes a todo item by ID                                        | *None*                              |
 
 **Additional Endpoints:**
-- `/health`: Returns status of backend service.
 - `/api-docs`: Swagger UI interactive API documentation.

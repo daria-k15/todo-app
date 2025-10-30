@@ -3,6 +3,5 @@ npm-debug.log
 .env
 coverage
 tests
-// *.test.js
 .git
 README.md

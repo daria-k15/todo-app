@@ -1,14 +1,11 @@
-import TodoModel from '../models/todoModel.js';
-import {TodoService} from '../service/todoService.js';
+import { TodoService } from '../service/todoService.js';
 
 class TodoController {
 
   async create(req, res, next) {
     try {
       console.log('Received /todos request');
-      const newTask = await TodoService.createTask(req);
-
-      res.status(200).json(newTask);
+      res.status(200).json(TodoService.createTask(req));
     } catch (error) {
       next(error);
     }
@@ -17,8 +14,7 @@ class TodoController {
   async getAll(req, res, next) {
     try {
       console.log('Received request to get all todos')
-      const todos = await TodoService.getAll();
-      res.status(200).json(todos);
+      res.status(200).json(TodoService.getAll());
     } catch (error) {
       next(error);
     }
@@ -27,9 +23,7 @@ class TodoController {
   async getById(req, res, next) {
     try {
       console.log('Received request to get todo by id', req.params.id)
-      const todo = await TodoService.getById(req.params.id);
-
-      res.status(200).json(todo);
+      res.status(200).json(TodoService.getById(req.params.id));
     } catch (error) {
       next(error);
     }
@@ -38,9 +32,7 @@ class TodoController {
   async update(req, res, next) {
     try {
       console.log('Received request to update todo by id', req.params.id)
-      const updatedTodo = await TodoService.update(req);
-
-      res.status(200).json(updatedTodo);
+      res.status(200).json(TodoService.update(req));
     } catch (error) {
       next(error);
     }
@@ -49,10 +41,16 @@ class TodoController {
   async delete(req, res, next) {
     try {
       console.log('Received request to delete todo by id', req.params.id)
+      res.status(200).json(TodoService.delete(req.params.id));
+    } catch (error) {
+      next(error);
+    }
+  }
 
-      const deletedTodo = await TodoService.delete(req.params.id);
-
-      res.status(200).json(deletedTodo);
+  async getTodoStats(req, res, next) {
+    try {
+      console.log("Received request to get stats of completed and pending todos");
+      res.status(200).json(TodoService.getStats());
     } catch (error) {
       next(error);
     }

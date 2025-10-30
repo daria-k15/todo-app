@@ -35,6 +35,18 @@ import todoController from '../controller/todoController.js';
 
 /**
  * @swagger
+ * /api/todos/stats:
+ *   get:
+ *     summary: Get todo statistics
+ *     tags: [Todos]
+ *     responses:
+ *       200:
+ *         description: Todo statistics
+ */
+router.get('/stats', todoController.getTodoStats);
+
+/**
+ * @swagger
  * /todos:
  *   get:
  *     summary: Get all todos

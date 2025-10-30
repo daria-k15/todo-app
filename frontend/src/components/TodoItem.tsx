@@ -3,82 +3,150 @@ import { Todo } from '../types/todo';
 
 interface TodoItemProps {
   todo: Todo;
-  onToggle: (id: number) => Promise<void>;
-  onDelete: (id: number) => Promise<void>;
+  onToggle: (id: number) => void;
+  onDelete: (id: number) => void;
+  onUpdate: (id: number, data: { description?: string }) => void;
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({ todo, onToggle, onDelete }) => {
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+const getPriorityIcon = (priority: string) => {
+  switch (priority) {
+    case 'high': return '🔴';
+    case 'medium': return '🟡';
+    case 'low': return '🟢';
+    default: return '⚪';
+  }
+};
 
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
+const getPriorityClass = (priority: string) => {
+  return `priority-${priority}`;
+};
 
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+const TodoItem: React.FC<TodoItemProps> = ({ todo, onToggle, onDelete, onUpdate }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedDescription, setEditedDescription] = useState(todo.description || '');
 
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  const handleSaveDescription = () => {
+    onUpdate(todo.id, { description: editedDescription });
+    setIsEditing(false);
   };
 
-  const handleDelete = async (): Promise<void> => {
-    if (window.confirm('Are you sure you want to delete this todo?')) {
-      setIsDeleting(true);
-      try {
-        await onDelete(todo.id);
-      } catch (error) {
-        setIsDeleting(false);
-      }
-    }
+  const handleCancelEdit = () => {
+    setEditedDescription(todo.description || '');
+    setIsEditing(false);
   };
 
   return (
-    <div className={`todo-item ${todo.completed ? 'completed' : ''} ${isDeleting ? 'deleting' : ''}`}>
-      <div className="todo-checkbox-wrapper">
-        <input
-          type="checkbox"
-          checked={todo.completed}
-          onChange={() => onToggle(todo.id)}
-          className="todo-checkbox"
-          id={`todo-${todo.id}`}
-        />
-        <label htmlFor={`todo-${todo.id}`} className="checkbox-label"></label>
-      </div>
-      
-      <div className="todo-content">
-        <h3 className="todo-title">{todo.title}</h3>
-        <div className="todo-meta">
-          <span className="todo-date">
-            <span className="date-icon">📅</span>
-            {formatDate(todo.createdAt)}
-          </span>
-          {todo.completed && (
-            <span className="todo-badge completed-badge">✓ Completed</span>
-          )}
+    <li className={`todo-item ${todo.completed ? 'completed' : ''} ${getPriorityClass(todo.priority)}`}>
+      <div className="todo-main">
+        <div className="todo-header">
+          <input
+            type="checkbox"
+            checked={todo.completed}
+            onChange={() => onToggle(todo.id)}
+            className="todo-checkbox"
+          />
+          <div className="todo-content-wrapper">
+            <h3 className="todo-title">
+              {getPriorityIcon(todo.priority)} {todo.title}
+            </h3>
+            {!isExpanded && todo.description && (
+              <p className="todo-description-preview">
+                {todo.description.substring(0, 60)}{todo.description.length > 60 ? '...' : ''}
+              </p>
+            )}
+          </div>
+          <div className="todo-actions">
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="btn-expand-icon"
+              title={isExpanded ? 'Show less' : 'Show more'}
+            >
+              {isExpanded ? '−' : '+'}
+            </button>
+            <button
+              onClick={() => onDelete(todo.id)}
+              className="btn-delete"
+              aria-label="Delete todo"
+            >
+              🗑️
+            </button>
+          </div>
         </div>
+
+        {/* Expandable Section */}
+        {isExpanded && (
+          <div className="todo-details">
+            <div className="todo-description-section">
+              <div className="description-header">
+                <span className="section-title">📝 Description</span>
+                {!isEditing && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="btn-edit-description"
+                  >
+                    {todo.description ? '✏️ Edit' : '➕ Add'}
+                  </button>
+                )}
+              </div>
+              
+              {isEditing ? (
+                <div className="description-edit">
+                  <textarea
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                    placeholder="Add a description..."
+                    rows={4}
+                    className="description-textarea"
+                    autoFocus
+                  />
+                  <div className="description-actions">
+                    <button onClick={handleSaveDescription} className="btn-save">
+                      💾 Save
+                    </button>
+                    <button onClick={handleCancelEdit} className="btn-cancel">
+                      ✖️ Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="description-display">
+                  {todo.description ? (
+                    <p className="todo-description-full">{todo.description}</p>
+                  ) : (
+                    <em className="no-description">No description added yet</em>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="todo-metadata">
+              <div className="metadata-item">
+                <span className="metadata-icon">📅</span>
+                <div>
+                  <div className="metadata-label">Created</div>
+                  <div className="metadata-value">{new Date(todo.createdAt).toLocaleDateString()}</div>
+                </div>
+              </div>
+              <div className="metadata-item">
+                <span className="metadata-icon">🔄</span>
+                <div>
+                  <div className="metadata-label">Updated</div>
+                  <div className="metadata-value">{new Date(todo.updatedAt).toLocaleDateString()}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      <button
-        className="btn-delete"
-        onClick={handleDelete}
-        disabled={isDeleting}
-        title="Delete todo"
-        aria-label="Delete todo"
-      >
-        {isDeleting ? '⏳' : '🗑️'}
-      </button>
-    </div>
+      <div className="todo-footer">
+        <span className={`priority-badge ${getPriorityClass(todo.priority)}`}>
+          {getPriorityIcon(todo.priority)} {todo.priority.toUpperCase()}
+        </span>
+        {todo.completed && <span className="status-badge completed">✓ Completed</span>}
+      </div>
+    </li>
   );
 };
 

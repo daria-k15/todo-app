@@ -4,27 +4,30 @@ import CustomerError from '../utils/CustomError.js';
 import ERROR_MESSAGES from '../constants/ErrorMessages.js';
 
 export const TodoService = {
-    async createTask(req) {
+    createTask(req) {
         console.log('Started to process /todos request');
-        const { title } = req.body
+        const { title, description, priority } = req.body
 
-        if (!title || title.trim() === '') {
-            throw new CustomerError(ERROR_MESSAGES.INVALID_DATA, 400);
-      }
 
+        const validPriorities = ['low', 'medium', 'high'];
+        if (priority && !validPriorities.includes(priority)) throw new CustomerError(ERROR_MESSAGES.INVALID_DATA, 400);
+
+        if (!title || title.trim() === '') throw new CustomerError(ERROR_MESSAGES.INVALID_DATA, 400);
         const newTask = new TodoModel(
-            title.trim()
+            title.trim(),
+            description,
+            priority
         );
 
         return db.create(newTask);
     },
 
-    async getAll() {
+    getAll() {
         console.log('Started to process get /todos requet');
         return db.getAll();
     },
 
-    async getById(id) {
+    getById(id) {
         console.log('Started to process request to get todo by id', id);
         const todo = db.getById(id);
 
@@ -34,27 +37,49 @@ export const TodoService = {
         return todo;
     },
 
-    async update(req) {
+    update(req) {
         console.log('Started to process request to update todo by id', req.params.id);
-        const { title, completed } = req.body;
+        const { title, completed, description, priority } = req.body;
 
-      if (title !== undefined && title.trim() === '') throw new CustomerError(ERROR_MESSAGES.INVALID_DATA, 400);
+        const validPriorities = ['low', 'medium', 'high'];
+        if (priority && !validPriorities.includes(priority)) throw new CustomerError(ERROR_MESSAGES.INVALID_DATA, 400);
 
-      const updatedTodo = db.update(req.params.id, {
-        title: title?.trim(),
-        completed
-      });
+        if (title !== undefined && title.trim() === '') throw new CustomerError(ERROR_MESSAGES.INVALID_DATA, 400);
 
-      if (!updatedTodo) throw new CustomerError(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
-      return updatedTodo;
+        const updatedTodo = db.update(req.params.id, {
+            title: title?.trim(),
+            completed,
+            description,
+            priority
+        });
+
+        if (!updatedTodo) throw new CustomerError(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
+        return updatedTodo;
     },
 
-    async delete(id) {
+    delete(id) {
         console.log('Started to process request to delete todo by id', id);
 
         const deletedTodo = db.delete(id);
 
         if (!deletedTodo) throw new CustomerError(ERROR_MESSAGES.ITEM_NOT_FOUND, 404);
         return deletedTodo;
+    },
+
+    getStats() {
+        const todos = this.getAll();
+
+        const stats = {
+            total: todos.length,
+            completed: todos.filter(t => t.completed).length,
+            pending: todos.filter(t => !t.completed).length,
+            byPriority: {
+                low: todos.filter(t => t.priority === 'low').length,
+                medium: todos.filter(t => t.priority === 'medium').length,
+                high: todos.filter(t => t.priority === 'high').length
+            }
+        };
+
+        return stats;
     }
 }
