@@ -25,7 +25,6 @@ A full-stack todo list application built with **React (TypeScript)** on the fron
 - In-memory database (for demo purposes)
 - Jest + Supertest (API tests)
 - Swagger-jsdoc + Swagger UI (API docs)
-- CORS/Helmet/Rate-limit (security middleware)
 
 **DevOps / Deployment:**
 - Docker (multi-service containers)
@@ -99,11 +98,6 @@ npm test
 | POST | `/todos` | Create a new todo |
 | PUT | `/todos/:id` | Update a todo |
 | DELETE | `/todos/:id` | Delete a todo |
-
-### API Request/Response Examples
-
-**Create Todo (POST /api/todos)**
-                          |
 
 **Additional Endpoints:**
 - `/api-docs`: Swagger UI interactive API documentation.

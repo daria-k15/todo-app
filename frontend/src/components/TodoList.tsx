@@ -13,7 +13,7 @@ const TodoList: React.FC<TodoListProps> = ({ todos, onToggle, onDelete, onUpdate
   if (todos.length === 0) {
     return (
       <div className="empty-state">
-        <div className="empty-state-icon">📝</div>
+        <div className="empty-state-icon"></div>
         <h3>No todos yet!</h3>
         <p>Add your first todo to get started</p>
       </div>

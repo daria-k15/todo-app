@@ -31,7 +31,7 @@ function App() {
   return (
     <div className="App">
       <header className="app-header">
-        <h1>📝 Todo List</h1>
+        <h1>Todo List</h1>
         <p>Stay organized and productive</p>
         <button onClick={toggleDarkMode} className="btn-theme-toggle">
           {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
